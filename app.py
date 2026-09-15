@@ -14,11 +14,15 @@ app = Flask(__name__)
 # PRODUCTION SECURITY: Fetch secret key and mail credentials from environment variables
 app.secret_key = os.environ.get("SECRET_KEY", "change_this_to_a_very_secure_random_key_in_production")
 
-DB_NAME = "school_database.db"
+# Use a persistent directory if available (e.g., /data on Render), otherwise default to local
+DATA_DIR = os.environ.get("DATA_DIR", ".")
+DB_NAME = os.path.join(DATA_DIR, "school_database.db")
 
-UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", 'static/uploads')
+UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", os.path.join(DATA_DIR, 'uploads'))
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
 
 SCHOOL_NAME = "Top Spot Academy"
 
