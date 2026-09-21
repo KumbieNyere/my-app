@@ -14,22 +14,17 @@ app = Flask(__name__)
 # PRODUCTION SECURITY: Fetch secret key and mail credentials from environment variables
 app.secret_key = os.environ.get("SECRET_KEY", "change_this_to_a_very_secure_random_key_in_production")
 
-# Use a persistent directory if available (e.g., /data on Render), otherwise default to local
-DATA_DIR = os.environ.get("DATA_DIR", ".")
-DB_NAME = os.path.join(DATA_DIR, "school_database.db")
+DB_NAME = "school_database.db"
 
-UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", os.path.join(DATA_DIR, 'uploads'))
+UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", 'static/uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-
 
 SCHOOL_NAME = "Top Spot Academy"
 
 def init_db():
     with sqlite3.connect(DB_NAME) as conn:
         cursor = conn.cursor()
-        # Enable WAL mode for better concurrency handling in SQLite
         cursor.execute("PRAGMA journal_mode=WAL;")
         
         cursor.execute('''
@@ -71,7 +66,7 @@ def init_db():
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS transactions (
                 transaction_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                type TEXT NOT NULL, -- 'Income' or 'Expense'
+                type TEXT NOT NULL,
                 category TEXT NOT NULL,
                 amount REAL NOT NULL,
                 description TEXT,
@@ -162,7 +157,6 @@ def seed_olevel_timetables():
         cursor = conn.cursor()
         
         comprehensive_schedule = [
-            # --- FORM 1 ---
             ("Form 1", "Monday", 1, "Mathematics (07:30 - 08:25)", "Mr. Nyereyemhuka"),
             ("Form 1", "Monday", 2, "English Language (08:25 - 09:20)", "Mrs. Chikunda"),
             ("Form 1", "Monday", 3, "Combined Science (09:20 - 10:15)", "Mr. Nyereyemhuka"),
@@ -170,84 +164,12 @@ def seed_olevel_timetables():
             ("Form 1", "Monday", 5, "ICT (11:45 - 12:45)", "Mrs. Nyereyemhuka"),
             ("Form 1", "Monday", 6, "Shona (12:45 - 13:45)", "Mrs. Chikunda"),
             
-            ("Form 1", "Tuesday", 1, "Business Studies (07:30 - 08:25)", "Mr. Nyereyemhuka"),
-            ("Form 1", "Tuesday", 2, "Principles of Accounting (08:25 - 09:20)", "Mr. Nyereyemhuka"),
-            ("Form 1", "Tuesday", 3, "Heritage Studies (09:20 - 10:15)", "Mrs. Chikunda"),
-            ("Form 1", "Tuesday", 4, "Mathematics (10:50 - 11:45)", "Mr. Nyereyemhuka"),
-            ("Form 1", "Tuesday", 5, "English Language (11:45 - 12:45)", "Mrs. Chikunda"),
-            ("Form 1", "Tuesday", 6, "Technical Graphics (12:45 - 13:45)", "Mrs. Nyereyemhuka"),
-
-            ("Form 1", "Wednesday", 1, "Combined Science (07:30 - 08:25)", "Mr. Nyereyemhuka"),
-            ("Form 1", "Wednesday", 2, "Geography (08:25 - 09:20)", "Mr. Nyereyemhuka"),
-            ("Form 1", "Wednesday", 3, "Shona (09:20 - 10:15)", "Mrs. Chikunda"),
-            ("Form 1", "Wednesday", 4, "ICT (10:50 - 11:45)", "Mrs. Nyereyemhuka"),
-            ("Form 1", "Wednesday", 5, "Business Studies (11:45 - 12:45)", "Mr. Nyereyemhuka"),
-            ("Form 1", "Wednesday", 6, "Mathematics (12:45 - 13:45)", "Mr. Nyereyemhuka"),
-
-            ("Form 1", "Thursday", 1, "Principles of Accounting (07:30 - 08:25)", "Mr. Nyereyemhuka"),
-            ("Form 1", "Thursday", 2, "Heritage Studies (08:25 - 09:20)", "Mrs. Chikunda"),
-            ("Form 1", "Thursday", 3, "Technical Graphics (09:20 - 10:15)", "Mrs. Nyereyemhuka"),
-            ("Form 1", "Thursday", 4, "English Language (10:50 - 11:45)", "Mrs. Chikunda"),
-            ("Form 1", "Thursday", 5, "Combined Science (11:45 - 12:45)", "Mr. Nyereyemhuka"),
-            ("Form 1", "Thursday", 6, "Geography (12:45 - 13:45)", "Mr. Nyereyemhuka"),
-
-            ("Form 1", "Friday", 1, "Mathematics (07:30 - 08:25)", "Mr. Nyereyemhuka"),
-            ("Form 1", "Friday", 2, "ICT (08:25 - 09:20)", "Mrs. Nyereyemhuka"),
-            ("Form 1", "Friday", 3, "Shona (09:20 - 10:15)", "Mrs. Chikunda"),
-            ("Form 1", "Friday", 4, "Business Studies (10:50 - 11:45)", "Mr. Nyereyemhuka"),
-            ("Form 1", "Friday", 5, "Principles of Accounting (11:45 - 12:45)", "Mr. Nyereyemhuka"),
-            ("Form 1", "Friday", 6, "Heritage Studies (12:45 - 13:45)", "Mrs. Chikunda"),
-
-            # --- FORM 2 ---
             ("Form 2", "Monday", 1, "English Language (07:30 - 08:25)", "Mrs. Chikunda"),
             ("Form 2", "Monday", 2, "Mathematics (08:25 - 09:20)", "Mr. Nyereyemhuka"),
             ("Form 2", "Monday", 3, "Geography (09:20 - 10:15)", "Mr. Nyereyemhuka"),
-            ("Form 2", "Monday", 4, "Combined Science (10:50 - 11:45)", "Mr. Nyereyemhuka"),
-            ("Form 2", "Monday", 5, "Shona (11:45 - 12:45)", "Mrs. Chikunda"),
-            ("Form 2", "Monday", 6, "ICT (12:45 - 13:45)", "Mrs. Nyereyemhuka"),
-
-            ("Form 2", "Tuesday", 1, "Principles of Accounting (07:30 - 08:25)", "Mr. Nyereyemhuka"),
-            ("Form 2", "Tuesday", 2, "Business Studies (08:25 - 09:20)", "Mr. Nyereyemhuka"),
-            ("Form 2", "Tuesday", 3, "Technical Graphics (09:20 - 10:15)", "Mrs. Nyereyemhuka"),
-            ("Form 2", "Tuesday", 4, "Heritage Studies (10:50 - 11:45)", "Mrs. Chikunda"),
-            ("Form 2", "Tuesday", 5, "Mathematics (11:45 - 12:45)", "Mr. Nyereyemhuka"),
-            ("Form 2", "Tuesday", 6, "English Language (12:45 - 13:45)", "Mrs. Chikunda"),
-
-            ("Form 2", "Wednesday", 1, "Geography (07:30 - 08:25)", "Mr. Nyereyemhuka"),
-            ("Form 2", "Wednesday", 2, "Combined Science (08:25 - 09:20)", "Mr. Nyereyemhuka"),
-            ("Form 2", "Wednesday", 3, "Mathematics (09:20 - 10:15)", "Mr. Nyereyemhuka"),
-            ("Form 2", "Wednesday", 4, "Business Studies (10:50 - 11:45)", "Mr. Nyereyemhuka"),
-            ("Form 2", "Wednesday", 5, "ICT (11:45 - 12:45)", "Mrs. Nyereyemhuka"),
-            ("Form 2", "Wednesday", 6, "Shona (12:45 - 13:45)", "Mrs. Chikunda"),
-
-            ("Form 2", "Thursday", 1, "Heritage Studies (07:30 - 08:25)", "Mrs. Chikunda"),
-            ("Form 2", "Thursday", 2, "Principles of Accounting (08:25 - 09:20)", "Mr. Nyereyemhuka"),
-            ("Form 2", "Thursday", 3, "English Language (09:20 - 10:15)", "Mrs. Chikunda"),
-            ("Form 2", "Thursday", 4, "Technical Graphics (10:50 - 11:45)", "Mrs. Nyereyemhuka"),
-            ("Form 2", "Thursday", 5, "Geography (11:45 - 12:45)", "Mr. Nyereyemhuka"),
-            ("Form 2", "Thursday", 6, "Combined Science (12:45 - 13:45)", "Mr. Nyereyemhuka"),
-
-            ("Form 2", "Friday", 1, "ICT (07:30 - 08:25)", "Mrs. Nyereyemhuka"),
-            ("Form 2", "Friday", 2, "Mathematics (08:25 - 09:20)", "Mr. Nyereyemhuka"),
-            ("Form 2", "Friday", 3, "Business Studies (09:20 - 10:15)", "Mr. Nyereyemhuka"),
-            ("Form 2", "Friday", 4, "Shona (10:50 - 11:45)", "Mrs. Chikunda"),
-            ("Form 2", "Friday", 5, "Principles of Accounting (11:45 - 12:45)", "Mr. Nyereyemhuka"),
-            ("Form 2", "Friday", 6, "Heritage Studies (12:45 - 13:45)", "Mrs. Chikunda"),
-
-            # --- FORM 3 & 4 ---
+            
             ("Form 3", "Monday", 1, "Mathematics (07:30 - 08:25)", "Mr. Nyereyemhuka"),
-            ("Form 3", "Monday", 2, "English Language (08:25 - 09:20)", "Sir Nyereyemhuka"),
-            ("Form 3", "Monday", 3, "Combined Science (09:20 - 10:15)", "Sir Nyereyemhuka"),
-            ("Form 3", "Monday", 4, "Geography (10:50 - 11:45)", "Sir Nyereyemhuka"),
-            ("Form 3", "Monday", 5, "ICT (11:45 - 12:45)", "Mrs. Nyereyemhuka"),
-            ("Form 3", "Monday", 6, "Shona (12:45 - 13:45)", "Mr. Nyereyemhuka"),
-
             ("Form 4", "Monday", 1, "Mathematics (07:30 - 08:25)", "Mr. Nyereyemhuka"),
-            ("Form 4", "Monday", 2, "English Language (08:25 - 09:20)", "Sir Nyereyemhuka"),
-            ("Form 4", "Monday", 3, "Combined Science (09:20 - 10:15)", "Sir Nyereyemhuka"),
-            ("Form 4", "Monday", 4, "Geography (10:50 - 11:45)", "Sir Nyereyemhuka"),
-            ("Form 4", "Monday", 5, "ICT (11:45 - 12:45)", "Mrs. Nyereyemhuka"),
-            ("Form 4", "Monday", 6, "Shona (12:45 - 13:45)", "Mr. Nyereyemhuka"),
         ]
         
         for slot in comprehensive_schedule:
@@ -264,7 +186,7 @@ def seed_olevel_timetables():
 seed_olevel_timetables()
 
 def is_teacher_or_admin():
-    return session.get('role') == 'Teacher' or session.get('user') == 'Mr. Nyereyemhuka'
+    return session.get('role') == 'Teacher' or session.get('user') == 'Mr. Nyereyemhuka' or session.get('role') == 'Admin'
 
 def send_email_notification(recipient_email, subject, body):
     smtp_server = os.environ.get("SMTP_SERVER", "smtp.example.com")
@@ -342,25 +264,13 @@ def render_page(body_content, **kwargs):
             th { background: #f7fafc; color: #4a5568; font-weight: 600; }
             .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 25px; }
             .dashboard-card { background: white; padding: 20px; border-radius: 8px; border: 1px solid var(--sidebar-border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-            .charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 25px; }
+            .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
             .chart-container { background: white; padding: 20px; border-radius: 8px; border: 1px solid var(--sidebar-border); height: 280px; position: relative; }
             
-            /* Print Optimization */
             @media print {
-                aside, header, .logout-btn, form, button, a, .hide-on-print {
-                    display: none !important;
-                }
-                body, .main-wrapper, .content-container {
-                    background: white !important;
-                    padding: 0 !important;
-                    margin: 0 !important;
-                    display: block !important;
-                    height: auto !important;
-                    overflow: visible !important;
-                }
-                .content-container {
-                    padding: 0 !important;
-                }
+                aside, header, .logout-btn, form, button, a { display: none !important; }
+                body, .main-wrapper, .content-container { background: white !important; padding: 0 !important; margin: 0 !important; display: block !important; height: auto !important; overflow: visible !important; }
+                .content-container { padding: 0 !important; }
             }
 
             @media (max-width: 900px) { .charts-row { grid-template-columns: 1fr; } body { flex-direction: column; height: auto; overflow: auto; } aside { width: 100%; height: auto; } .main-wrapper { height: auto; overflow: visible; } }
@@ -368,11 +278,7 @@ def render_page(body_content, **kwargs):
         <script>
             function togglePassword(id) {
                 const input = document.getElementById(id);
-                if (input.type === "password") {
-                    input.type = "text";
-                } else {
-                    input.type = "password";
-                }
+                if (input.type === "password") { input.type = "text"; } else { input.type = "password"; }
             }
         </script>
     </head>
@@ -407,8 +313,8 @@ def render_page(body_content, **kwargs):
                     {% elif role == 'Finance' %}
                         <a href="/finance">💳 Finance & Billing</a>
                         <a href="/elearning">📚 E-Learning & Textbooks</a>
+                        <a href="/change-password">🔑 Change Password</a>
                     {% else %}
-                        <!-- Admin / Mr. Nyereyemhuka -->
                         <a href="/teacher-dashboard">📊 Teacher Dashboard</a>
                         <a href="/teacher-students">👥 Manage Students & Directory</a>
                         <a href="/teacher-reports">📝 Upload Reports</a>
@@ -423,7 +329,7 @@ def render_page(body_content, **kwargs):
                 {% else %}
                     <div class="menu-section-title">Access Portal</div>
                     <a href="/login">🔐 Login</a>
-                    <a href="/register-teacher">👩‍🏫 Teacher Registration</a>
+                    <a href="/register-teacher">👩🏫 Teacher Registration</a>
                     <a href="/register-parent">👪 Parent Portal Registration</a>
                     <a href="/register-student">🎓 Student Portal Registration</a>
                     <a href="/forgot-password">❓ Forgot Password</a>
@@ -708,7 +614,8 @@ def verify_reset():
 
 @app.route('/change-password', methods=['GET', 'POST'])
 def change_password():
-    if 'user' not in session or session.get('role') not in ['Teacher', 'Student'] and session.get('user') != 'Mr. Nyereyemhuka':
+    allowed_roles = ['Teacher', 'Student', 'Finance', 'Admin']
+    if 'user' not in session or (session.get('role') not in allowed_roles and session.get('user') != 'Mr. Nyereyemhuka'):
         return redirect(url_for('login'))
         
     username = session['user']
@@ -897,9 +804,8 @@ def teacher_dashboard():
             <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Total student body records</p>
         </div>
         <div class="dashboard-card">
-            <h3>Portal Session</h3>
-            <p style="color: #38a169; font-weight: bold; margin: 5px 0;">Active Connection</p>
-            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Teacher / Admin Clearance Verified</p>
+            <h3>Year-End Operations</h3>
+            <a href="/run-year-rollover" onclick="return confirm('Promote all students to their next grade level and carry over outstanding balances?');" style="display: inline-block; background: #e53e3e; color: white; padding: 10px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 5px;">🔄 Run New Year Rollover</a>
         </div>
     </div>
 
@@ -960,6 +866,69 @@ def teacher_dashboard():
     '''
     return render_page(content, my_schedule=my_schedule)
 
+@app.route('/run-year-rollover')
+def run_year_rollover():
+    if not is_teacher_or_admin():
+        return redirect(url_for('login'))
+        
+    today_date = datetime.now().strftime("%Y-%m-%d")
+    current_year = datetime.now().strftime("%Y")
+    
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
+        
+        # 1. Fetch all students
+        cursor.execute("SELECT student_id, grade_level FROM students")
+        students = cursor.fetchall()
+        
+        promotion_map = {
+            "Form 1": "Form 2",
+            "Form 2": "Form 3",
+            "Form 3": "Form 4",
+            "Form 4": "Form 5",
+            "Form 5": "Form 6",
+            "Form 6": "Graduated"
+        }
+        
+        for student_id, current_grade in students:
+            # Promote student grade level
+            grade_clean = current_grade.strip()
+            if grade_clean in promotion_map:
+                new_grade = promotion_map[grade_clean]
+                cursor.execute("UPDATE students SET grade_level = ? WHERE student_id = ?", (new_grade, student_id))
+            
+            # 2. Rollover outstanding balances
+            cursor.execute("SELECT SUM(balance) FROM billing WHERE student_id = ? AND status != 'Paid'", (student_id,))
+            outstanding_balance = cursor.fetchone()[0] or 0.0
+            
+            if outstanding_balance > 0:
+                # Clear existing unpaid bills to avoid double-entry/duplicate errors
+                cursor.execute("DELETE FROM billing WHERE student_id = ? AND status != 'Paid'", (student_id,))
+                
+                # Check if an Arrears entry already exists
+                cursor.execute("SELECT bill_id, amount_due, amount_paid FROM billing WHERE student_id = ? AND fee_type = 'Arrears (Previous Year)'", (student_id,))
+                existing_arrears = cursor.fetchone()
+                
+                if existing_arrears:
+                    bill_id, old_due, old_paid = existing_arrears
+                    new_due = old_due + outstanding_balance
+                    new_bal = max(0.0, new_due - old_paid)
+                    status = "Paid" if new_bal == 0 else ("Partial" if old_paid > 0 else "Unpaid")
+                    cursor.execute('''
+                        UPDATE billing 
+                        SET amount_due = ?, balance = ?, status = ?, due_date = ?
+                        WHERE bill_id = ?
+                    ''', (new_due, new_bal, status, today_date, bill_id))
+                else:
+                    cursor.execute('''
+                        INSERT INTO billing (student_id, fee_type, description, amount_due, amount_paid, balance, status, due_date)
+                        VALUES (?, 'Arrears (Previous Year)', ?, ?, 0.0, ?, 'Unpaid', ?)
+                    ''', (student_id, f'Unpaid fee balance carried over from {current_year}', outstanding_balance, outstanding_balance, today_date))
+                
+        conn.commit()
+        
+    return redirect(url_for('teacher_students'))
+
 @app.route('/teacher-students')
 def teacher_students():
     if not is_teacher_or_admin() and session.get('role') != 'Teacher':
@@ -972,11 +941,15 @@ def teacher_students():
         
     content = '''
     <h1>Manage Students</h1>
+    <div style="margin-bottom: 20px;">
+        <a href="/run-year-rollover" onclick="return confirm('Are you sure you want to promote all students and rollover outstanding fee balances?');" style="background: #e53e3e; color: white; padding: 10px 16px; border-radius: 6px; text-decoration: none; font-weight: bold;">🔄 New Year: Auto-Promote All Students & Rollover Balances</a>
+    </div>
+
     <h2>Register New Student Record</h2>
     <form action="/teacher-add-student" method="POST">
         <input type="text" name="admission_number" placeholder="Admission Number (e.g. TS2026-001)" required>
         <input type="text" name="name" placeholder="Full Name" required>
-        <input type="text" name="grade_level" placeholder="Grade Level / Class (e.g. Form 3)" required>
+        <input type="text" name="grade_level" placeholder="Grade Level / Class (e.g. Form 1, Form 3, etc.)" required>
         <input type="date" name="dob" required>
         <input type="email" name="guardian_email" placeholder="Guardian Email" required>
         <input type="text" name="phone" placeholder="Phone Number" required>
@@ -985,19 +958,19 @@ def teacher_students():
 
     <h2>Student Directory</h2>
     <table>
-        <tr><th>ID</th><th>Admission No</th><th>Name</th><th>Grade/Class</th><th>DOB</th><th>Guardian Email</th><th>Phone</th><th>Actions</th></tr>
+        <tr><th>ID</th><th>Admission No</th><th>Name</th><th>Grade/Status</th><th>DOB</th><th>Guardian Email</th><th>Phone</th><th>Actions</th></tr>
         {% for s in students %}
         <tr>
             <td>{{s[0]}}</td>
             <td><b>{{s[1]}}</b></td>
             <td>{{s[2]}}</td>
-            <td>{{s[3]}}</td>
+            <td><span style="background: #edf2f7; padding: 3px 8px; border-radius: 4px; font-weight: 600;">{{s[3]}}</span></td>
             <td>{{s[4]}}</td>
             <td>{{s[5]}}</td>
             <td>{{s[6]}}</td>
             <td>
-                <a href="/edit-student/{{s[0]}}" style="color: var(--primary); text-decoration: none; font-weight: 600; margin-right: 10px;">✏️ Edit</a>
-                <a href="/delete-student/{{s[0]}}" onclick="return confirm('Are you sure you want to delete this mistaken student record?');" style="color: #e53e3e; text-decoration: none; font-weight: 600;">🗑️ Delete</a>
+                <a href="/edit-student/{{s[0]}}" style="color: var(--primary); text-decoration: none; font-weight: 600; margin-right: 10px;">✏️ Edit Status/Info</a>
+                <a href="/delete-student/{{s[0]}}" onclick="return confirm('Are you sure you want to delete this student record?');" style="color: #e53e3e; text-decoration: none; font-weight: 600;">🗑️ Delete</a>
             </td>
         </tr>
         {% endfor %}
@@ -1066,7 +1039,7 @@ def edit_student(student_id):
         <input type="text" name="admission_number" value="{student[1]}" required>
         <label>Full Name:</label>
         <input type="text" name="name" value="{student[2]}" required>
-        <label>Grade Level / Class:</label>
+        <label>Grade Level / Status (e.g. Form 1 to Form 6, Graduated, Withdrawn):</label>
         <input type="text" name="grade_level" value="{student[3]}" required>
         <label>Date of Birth:</label>
         <input type="date" name="dob" value="{student[4]}" required>
@@ -1353,7 +1326,7 @@ def index():
     <form action="/add_student" method="POST">
         <input type="text" name="admission_number" placeholder="Admission Number (e.g. TS2026-001)" required>
         <input type="text" name="name" placeholder="Full Name" required>
-        <input type="text" name="grade_level" placeholder="Grade Level (e.g. Form 3 / Grade 10)" required>
+        <input type="text" name="grade_level" placeholder="Grade Level (e.g. Form 1)" required>
         <input type="date" name="dob" required>
         <input type="email" name="guardian_email" placeholder="Guardian Email" required>
         <input type="text" name="phone" placeholder="Phone Number" required>
@@ -1374,7 +1347,7 @@ def index():
             <td>{{s[6]}}</td>
             <td>
                 <a href="/edit-student/{{s[0]}}" style="color: var(--primary); text-decoration: none; font-weight: 600; margin-right: 10px;">✏️ Edit</a>
-                <a href="/delete-student/{{s[0]}}" onclick="return confirm('Are you sure you want to delete this mistaken student record?');" style="color: #e53e3e; text-decoration: none; font-weight: 600;">🗑️ Delete</a>
+                <a href="/delete-student/{{s[0]}}" onclick="return confirm('Are you sure you want to delete this student record?');" style="color: #e53e3e; text-decoration: none; font-weight: 600;">🗑️ Delete</a>
             </td>
         </tr>
         {% endfor %}
@@ -1384,7 +1357,7 @@ def index():
 
 @app.route('/add_student', methods=['POST'])
 def add_student():
-    if 'user' not in session or (session.get('role') == 'Student'):
+    if 'user' not in session or session.get('role') == 'Student':
         return redirect(url_for('login'))
     
     admission_number = request.form['admission_number'].strip().upper()
@@ -1409,10 +1382,11 @@ def add_student():
 
 @app.route('/finance')
 def finance():
-    if 'user' not in session or session.get('role') in ['Teacher', 'Student'] and session.get('user') != 'Mr. Nyereyemhuka':
+    if 'user' not in session or (session.get('role') in ['Teacher', 'Student'] and session.get('user') != 'Mr. Nyereyemhuka'):
         return redirect(url_for('login'))
     
     role = session.get('role')
+    username = session.get('user')
     
     with sqlite3.connect(DB_NAME) as conn:
         cursor = conn.cursor()
@@ -1429,7 +1403,6 @@ def finance():
         cursor.execute("SELECT transaction_id, type, category, amount, description, date, recorded_by FROM transactions ORDER BY date DESC")
         transactions = cursor.fetchall()
         
-        # Calculate totals
         cursor.execute("SELECT SUM(amount) FROM transactions WHERE type = 'Income'")
         total_other_income = cursor.fetchone()[0] or 0.0
         
@@ -1442,6 +1415,13 @@ def finance():
         total_expense = cursor.fetchone()[0] or 0.0
         
         net_balance = total_income - total_expense
+
+        # Data for Fee Status Pie Chart
+        cursor.execute("SELECT status, COUNT(*) FROM billing GROUP BY status")
+        status_data = dict(cursor.fetchall())
+        paid_bills = status_data.get('Paid', 0)
+        partial_bills = status_data.get('Partial', 0)
+        unpaid_bills = status_data.get('Unpaid', 0)
 
     content = '''
     <h1>Finance, Income & Expenditure Dashboard</h1>
@@ -1461,6 +1441,18 @@ def finance():
             <h3>Net Balance</h3>
             <p style="font-size: 24px; font-weight: bold; color: var(--primary); margin: 5px 0;">${{ "%.2f"|format(net_balance) }}</p>
             <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Income minus Expenditure</p>
+        </div>
+    </div>
+
+    <!-- Financial Overview Visual Charts -->
+    <div class="charts-row">
+        <div class="chart-container">
+            <h3>Revenue vs Expense Ratio</h3>
+            <canvas id="financeOverviewChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <h3>Fee Status Distribution</h3>
+            <canvas id="feeStatusChart"></canvas>
         </div>
     </div>
     '''
@@ -1495,9 +1487,10 @@ def finance():
                 <option value="School fees">School fees</option>
                 <option value="Boarding fee">Boarding fee</option>
                 <option value="Uniform fee">Uniform fee</option>
-                <option value="Stationery fee">Stationery fee</option>
+                <option value="Stationary fee">Stationary fee</option>
                 <option value="Transport fee">Transport fee</option>
                 <option value="Levy / Extra">Levy / Extra</option>
+                <option value="Arrears (Previous Year)">Arrears (Previous Year)</option>
             </select>
 
             <input type="text" name="description" placeholder="Description / Details (e.g. Term 1 Boarding)">
@@ -1507,14 +1500,14 @@ def finance():
         </form>
         '''
 
-    content += '''
+    content += f'''
     <h2>Record Payment / Pay Specific Bill Category</h2>
     <form action="/make_payment" method="POST">
         <select name="bill_id" required>
             <option value="">Select Specific Student Bill Category</option>
-            {% for row in ledger %}
-            <option value="{{row[0]}}">[{{row[2]}}] {{row[3]}} — {{row[4]}} (Due: ${{row[6]}}, Balance: ${{row[8]}})</option>
-            {% endfor %}
+            {{% for row in ledger %}}
+            <option value="{{{{row[0]}}}}">[{{{{row[2]}}}}] {{{{row[3]}}}} — {{{{row[4]}}}} (Due: ${{{{row[6]}}}}, Balance: ${{{{row[8]}}}})</option>
+            {{% endfor %}}
         </select>
         <input type="number" step="0.01" name="payment_amount" placeholder="Payment Amount ($)" required>
         <button type="submit">Process Payment for Selected Category</button>
@@ -1523,47 +1516,139 @@ def finance():
     <h2>Other Income & Expenditure Log</h2>
     <table>
         <tr><th>Type</th><th>Category</th><th>Amount</th><th>Description</th><th>Date</th><th>Recorded By</th></tr>
-        {% if transactions %}
-            {% for tx in transactions %}
+        {{% if transactions %}}
+            {{% for tx in transactions %}}
             <tr>
-                <td><b><span style="color: {% if tx[1] == 'Income' %}#38a169{% else %}#e53e3e{% endif %};">{{tx[1]}}</span></b></td>
-                <td>{{tx[2]}}</td>
-                <td><b>${{ "%.2f"|format(tx[3]) }}</b></td>
-                <td>{{tx[4]}}</td>
-                <td>{{tx[5]}}</td>
-                <td>{{tx[6]}}</td>
+                <td><b><span style="color: {{% if tx[1] == 'Income' %}}#38a169{{% else %}}#e53e3e{{% endif %}};">{{{{tx[1]}}}}</span></b></td>
+                <td>{{{{tx[2]}}}}</td>
+                <td><b>${{{{ "%.2f"|format(tx[3]) }}}}</b></td>
+                <td>{{{{tx[4]}}}}</td>
+                <td>{{{{tx[5]}}}}</td>
+                <td>{{{{tx[6]}}}}</td>
             </tr>
-            {% endfor %}
-        {% else %}
+            {{% endfor %}}
+        {{% else %}}
             <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No independent transactions logged yet.</td></tr>
-        {% endif %}
+        {{% endif %}}
     </table>
 
     <h2>Student Fee Accounts Ledger (Multi-Category)</h2>
     <table>
         <tr><th>Admission No</th><th>Student Name</th><th>Fee Category</th><th>Description</th><th>Total Due</th><th>Paid</th><th>Balance</th><th>Status</th><th>Invoice Actions</th></tr>
-        {% if ledger %}
-            {% for row in ledger %}
+        {{% if ledger %}}
+            {{% for row in ledger %}}
             <tr>
-                <td><b>{{row[2]}}</b></td>
-                <td>{{row[3]}}</td>
-                <td><span style="background: #edf2f7; padding: 3px 8px; border-radius: 4px; font-weight: 600;">{{row[4]}}</span></td>
-                <td>{{row[5]}}</td>
-                <td>${{ "%.2f"|format(row[6]) }}</td>
-                <td>${{ "%.2f"|format(row[7]) }}</td>
-                <td><b>${{ "%.2f"|format(row[8]) }}</b></td>
-                <td>{{row[9]}}</td>
+                <td><b>{{{{row[2]}}}}</b></td>
+                <td>{{{{row[3]}}}}</td>
+                <td><span style="background: #edf2f7; padding: 3px 8px; border-radius: 4px; font-weight: 600;">{{{{row[4]}}}}</span></td>
+                <td>{{{{row[5]}}}}</td>
+                <td>${{{{ "%.2f"|format(row[6]) }}}}</td>
+                <td>${{{{ "%.2f"|format(row[7]) }}}}</td>
+                <td><b>${{{{ "%.2f"|format(row[8]) }}}}</b></td>
+                <td>{{{{row[9]}}}}</td>
                 <td>
-                    <a href="/invoice/{{row[1]}}" style="color: var(--primary); text-decoration: none; font-weight: 600;">View Invoices</a>
+                    <a href="/invoice/{{{{row[1]}}}}" style="color: var(--primary); text-decoration: none; font-weight: 600; margin-right: 8px;">View Invoice</a>
+                    {{% if role in ['Admin', 'Finance'] or username == 'Mr. Nyereyemhuka' %}}
+                        <a href="/edit-bill/{{{{row[0]}}}}" style="color: #d69e2e; text-decoration: none; font-weight: 600;">✏️ Edit Bill</a>
+                    {{% endif %}}
                 </td>
             </tr>
-            {% endfor %}
-        {% else %}
+            {{% endfor %}}
+        {{% else %}}
             <tr><td colspan="9" style="text-align: center; color: var(--text-muted);">No fee records found. Use the form above to add bills.</td></tr>
-        {% endif %}
+        {{% endif %}}
     </table>
+
+    <script>
+        const ctxFinance = document.getElementById('financeOverviewChart').getContext('2d');
+        new Chart(ctxFinance, {{
+            type: 'doughnut',
+            data: {{
+                labels: ['Total Income', 'Total Expenses'],
+                datasets: [{{
+                    data: [{total_income}, {total_expense}],
+                    backgroundColor: ['#38a169', '#e53e3e']
+                }}]
+            }},
+            options: {{ responsive: true, maintainAspectRatio: false }}
+        }});
+
+        const ctxStatus = document.getElementById('feeStatusChart').getContext('2d');
+        new Chart(ctxStatus, {{
+            type: 'pie',
+            data: {{
+                labels: ['Fully Paid', 'Partially Paid', 'Unpaid'],
+                datasets: [{{
+                    data: [{paid_bills}, {partial_bills}, {unpaid_bills}],
+                    backgroundColor: ['#38a169', '#d69e2e', '#e53e3e']
+                }}]
+            }},
+            options: {{ responsive: true, maintainAspectRatio: false }}
+        }});
+    </script>
     '''
     return render_page(content, students=students, ledger=ledger, transactions=transactions, total_income=total_income, total_expense=total_expense, net_balance=net_balance)
+
+@app.route('/edit-bill/<int:bill_id>', methods=['GET', 'POST'])
+def edit_bill(bill_id):
+    if 'user' not in session or (session.get('role') not in ['Admin', 'Finance'] and session.get('user') != 'Mr. Nyereyemhuka'):
+        return redirect(url_for('login'))
+
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
+        if request.method == 'POST':
+            fee_type = request.form['fee_type']
+            description = request.form['description']
+            amount_due = float(request.form['amount_due'])
+            due_date = request.form['due_date']
+
+            cursor.execute("SELECT amount_paid FROM billing WHERE bill_id = ?", (bill_id,))
+            row = cursor.fetchone()
+            amount_paid = row[0] if row else 0.0
+
+            new_balance = max(0.0, amount_due - amount_paid)
+            if new_balance == 0.0 and amount_due > 0:
+                status = "Paid"
+            elif amount_paid > 0:
+                status = "Partial"
+            else:
+                status = "Unpaid"
+
+            cursor.execute('''
+                UPDATE billing
+                SET fee_type = ?, description = ?, amount_due = ?, balance = ?, status = ?, due_date = ?
+                WHERE bill_id = ?
+            ''', (fee_type, description, amount_due, new_balance, status, due_date, bill_id))
+            conn.commit()
+            return redirect(url_for('finance'))
+
+        cursor.execute('''
+            SELECT b.bill_id, s.name, b.fee_type, b.description, b.amount_due, b.due_date 
+            FROM billing b JOIN students s ON b.student_id = s.student_id 
+            WHERE b.bill_id = ?
+        ''', (bill_id,))
+        bill = cursor.fetchone()
+
+    if not bill:
+        return "<h1>Invoice record not found</h1><p><a href='/finance'>Return to Finance</a></p>"
+
+    content = f'''
+    <h1>Edit Invoice Bill #{bill[0]}</h1>
+    <p><b>Student:</b> {bill[1]}</p>
+    <form method="POST">
+        <label>Fee Category:</label>
+        <input type="text" name="fee_type" value="{bill[2]}" required>
+        <label>Description:</label>
+        <input type="text" name="description" value="{bill[3]}">
+        <label>Amount Due ($):</label>
+        <input type="number" step="0.01" name="amount_due" value="{bill[4]}" required>
+        <label>Due Date:</label>
+        <input type="date" name="due_date" value="{bill[5]}" required>
+        <button type="submit">Update Invoice Entry</button>
+    </form>
+    <p><a href="/finance">Cancel & Return</a></p>
+    '''
+    return render_page(content)
 
 @app.route('/save_transaction', methods=['POST'])
 def save_transaction():
@@ -1669,7 +1754,7 @@ def view_invoice(student_id):
     <div style="background: white; padding: 40px; border-radius: 8px; border: 1px solid var(--sidebar-border); max-width: 750px; margin: auto;">
         <h2>''' + SCHOOL_NAME + ''' - Comprehensive Fee Statement</h2>
         <p><b>Student Name:</b> ''' + student[2] + ''' (Admission No: ''' + str(student[1]) + ''')</p>
-        <p><b>Grade Level:</b> ''' + student[3] + ''' <span class="hide-on-print">| <b>Guardian Email:</b> ''' + str(student[4]) + '''</span></p>
+        <p><b>Grade Level:</b> ''' + student[3] + ''' | <b>Guardian Email:</b> ''' + str(student[4]) + '''</p>
         
         <table>
             <tr><th>Fee Category</th><th>Description</th><th>Due Date</th><th>Due ($)</th><th>Paid ($)</th><th>Balance ($)</th><th>Status</th></tr>
@@ -1695,7 +1780,7 @@ def view_invoice(student_id):
         </div>
         
         <br>
-        <div style="display: flex; gap: 10px;" class="hide-on-print">
+        <div style="display: flex; gap: 10px;">
             <button onclick="window.print()" style="background: #38a169; color: white; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600;">🖨️ Print Invoice</button>
             <a href="/finance" style="background: #4a5568; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 600; display: inline-block; line-height: normal;">Back to Finance</a>
         </div>
@@ -1861,91 +1946,112 @@ def elearning():
     
     with sqlite3.connect(DB_NAME) as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT resource_id, title, subject, grade_level, filename, uploaded_by, date_uploaded FROM elearning")
+        cursor.execute("SELECT resource_id, title, subject, grade_level, filename, uploaded_by, date_uploaded FROM elearning ORDER BY resource_id DESC")
         resources = cursor.fetchall()
 
     content = '''
-    <h1>E-Learning & Textbook Library</h1>
-    <p style="color: var(--text-muted);">Access study materials, course notes, and downloadable textbook PDFs.</p>
+    <h1>E-Learning & Digital Library Resources</h1>
+    <p style="color: var(--text-muted);">Access subject e-books, study materials, assignments, and curriculum resources.</p>
     '''
 
-    if role in ['Teacher', 'Admin'] or is_teacher_or_admin():
+    if is_teacher_or_admin():
         content += '''
-        <h2>Upload Textbook or Study Material</h2>
-        <form action="/upload_resource" method="POST" enctype="multipart/form-data">
-            <input type="text" name="title" placeholder="Resource Title (e.g. Form 3 Mathematics Guide)" required>
-            <input type="text" name="subject" placeholder="Subject (e.g. Mathematics)" required>
-            <input type="text" name="grade_level" placeholder="Grade Level (e.g. Form 3)" required>
-            <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 5px;">Upload Document / PDF File:</label>
-            <input type="file" name="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" required>
-            <button type="submit">Upload Resource</button>
+        <h2>Upload New E-Learning Resource / Textbook</h2>
+        <form action="/upload-elearning" method="POST" enctype="multipart/form-data">
+            <input type="text" name="title" placeholder="Resource Title (e.g. Form 3 Math Textbook)" required>
+            <input type="text" name="subject" placeholder="Subject Name (e.g. Mathematics, Science)" required>
+            <input type="text" name="grade_level" placeholder="Target Grade (e.g. Form 1, Form 3)" required>
+            <input type="file" name="file" required>
+            <button type="submit">Upload Resource File</button>
         </form>
         '''
 
     content += '''
-    <h2>Available Library Resources</h2>
+    <h2>Available Study Materials & Resources</h2>
     <table>
-        <tr><th>Title</th><th>Subject</th><th>Grade</th><th>Uploaded By</th><th>Date</th><th>Action</th></tr>
+        <tr><th>Title</th><th>Subject</th><th>Grade Level</th><th>Uploaded By</th><th>Date</th><th>Actions</th></tr>
         {% if resources %}
             {% for r in resources %}
             <tr>
                 <td><b>{{r[1]}}</b></td>
                 <td>{{r[2]}}</td>
-                <td>{{r[3]}}</td>
+                <td><span style="background: #edf2f7; padding: 3px 8px; border-radius: 4px; font-weight: 600;">{{r[3]}}</span></td>
                 <td>{{r[5]}}</td>
                 <td>{{r[6]}}</td>
-                <td><a href="/download_resource/{{r[0]}}" style="color: var(--primary); text-decoration: none; font-weight: 600;">📥 Download File</a></td>
+                <td>
+                    <a href="/download-elearning/{{r[4]}}" style="color: var(--primary); text-decoration: none; font-weight: 600; margin-right: 10px;">📥 Download</a>
+                    {% if is_admin_teacher %}
+                    <a href="/delete-elearning/{{r[0]}}" onclick="return confirm('Delete this study resource?');" style="color: #e53e3e; text-decoration: none; font-weight: 600;">🗑️ Delete</a>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         {% else %}
-            <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No e-learning materials uploaded yet.</td></tr>
+            <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No e-learning resources uploaded yet.</td></tr>
         {% endif %}
     </table>
     '''
     return render_page(content, resources=resources)
 
-@app.route('/upload_resource', methods=['POST'])
-def upload_resource():
-    if 'user' not in session or session.get('role') == 'Student':
+@app.route('/upload-elearning', methods=['POST'])
+def upload_elearning():
+    if not is_teacher_or_admin():
         return redirect(url_for('login'))
         
-    title = request.form['title']
-    subject = request.form['subject']
-    grade_level = request.form['grade_level']
-    uploaded_by = session['user']
-    today = datetime.now().strftime("%Y-%m-%d")
-    
-    file = request.files.get('file')
-    if file and file.filename != '':
+    if 'file' not in request.files:
+        return redirect(url_for('elearning'))
+        
+    file = request.files['file']
+    if file.filename == '':
+        return redirect(url_for('elearning'))
+        
+    if file:
         filename = secure_filename(file.filename)
-        file_path_save = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(file_path_save)
+        # Unique timestamp prefix to avoid filename collisions
+        unique_filename = f"{int(datetime.now().timestamp())}_{filename}"
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
+        
+        title = request.form['title']
+        subject = request.form['subject']
+        grade_level = request.form['grade_level']
+        uploaded_by = session['user']
+        today = datetime.now().strftime("%Y-%m-%d")
         
         with sqlite3.connect(DB_NAME) as conn:
             cursor = conn.cursor()
             cursor.execute('''
                 INSERT INTO elearning (title, subject, grade_level, filename, uploaded_by, date_uploaded)
                 VALUES (?, ?, ?, ?, ?, ?)
-            ''', (title, subject, grade_level, filename, uploaded_by, today))
+            ''', (title, subject, grade_level, unique_filename, uploaded_by, today))
             conn.commit()
             
     return redirect(url_for('elearning'))
 
-@app.route('/download_resource/<int:resource_id>')
-def download_resource(resource_id):
+@app.route('/download-elearning/<filename>')
+def download_elearning(filename):
     if 'user' not in session:
         return redirect(url_for('login'))
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
+
+@app.route('/delete-elearning/<int:resource_id>')
+def delete_elearning(resource_id):
+    if not is_teacher_or_admin():
+        return redirect(url_for('login'))
         
-    with sqlite3.connect(DB_NAME) as cnt:
-        cursor = cnt.cursor()
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
         cursor.execute("SELECT filename FROM elearning WHERE resource_id = ?", (resource_id,))
-        record = cursor.fetchone()
+        resource = cursor.fetchone()
         
-    if record:
-        filename = record[0]
-        return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
-    return "File not found", 404
+        if resource:
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], resource[0])
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            cursor.execute("DELETE FROM elearning WHERE resource_id = ?", (resource_id,))
+            conn.commit()
+            
+    return redirect(url_for('elearning'))
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port=5000)
+    app.run(debug=True, port=5000)
 
