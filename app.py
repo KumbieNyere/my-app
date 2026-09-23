@@ -1491,9 +1491,9 @@ def finance():
                 <option value="School fees">School fees</option>
                 <option value="Boarding fee">Boarding fee</option>
                 <option value="Uniform fee">Uniform fee</option>
-                <option value="Stationary fee">Stationary fee</option>
+                <option value="Stationery fee">Stationery fee</option>
                 <option value="Transport fee">Transport fee</option>
-                <option value="Levy / Extra">Levy / Extra</option>
+                <option value="Levy / Registration">Levy / Registration</option>
                 <option value="Arrears (Previous Year)">Arrears (Previous Year)</option>
             </select>
 
